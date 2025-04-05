@@ -11,7 +11,7 @@ docker-compose run app bash
 move to target package.
 
 ```
-cd xxx
+cd <target-package>
 ```
 
 run go file.
