@@ -8,7 +8,7 @@ pull the latest image.
 docker compose pull
 ```
 
-start a new container and opening a shell.
+start a new container and opening a shell inside it.
 
 ```
 docker compose run --remove-orphans app bash
