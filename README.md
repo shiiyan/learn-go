@@ -2,10 +2,16 @@
 
 ## how to use
 
-start the container.
+pull the latest image.
 
 ```
-docker-compose run app bash
+docker compose pull
+```
+
+start a new container and opening a shell.
+
+```
+docker compose run app bash
 ```
 
 move to target package.
