@@ -11,7 +11,7 @@ docker compose pull
 start a new container and opening a shell.
 
 ```
-docker compose run app bash
+docker compose run --remove-orphans app bash
 ```
 
 move to target package.
