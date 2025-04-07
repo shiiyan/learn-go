@@ -12,8 +12,10 @@
                 "go.toolsGopath": "/go"
             },
             "extensions": [
-                "golang.Go"
+                "golang.Go",
+                "ms-azuretools.vscode-docker"
             ]
         }
-    }
+    },
+    "postCreateCommand": "make setup"
 }
