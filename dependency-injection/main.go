@@ -2,37 +2,41 @@ package main
 
 import "fmt"
 
-type Greeter interface {
-	Greet(name string) string
+type Message string
+
+func NewMessage() Message {
+	return Message("Hi there!")
 }
 
-type greeterImpl struct {
-	prefix string
+type Greeter struct {
+	Message Message
 }
 
-func (g *greeterImpl) Greet(name string) string {
-	return fmt.Sprintf("%s, %s!", g.prefix, name)
+func NewGreeter(m Message) Greeter {
+	return Greeter{Message: m}
 }
 
-func NewGreeter(prefix string) Greeter {
-	return &greeterImpl{prefix: prefix}
+func (g Greeter) Greet() Message {
+	return g.Message
 }
 
-type Handler struct {
+type Event struct {
 	Greeter Greeter
 }
 
-func NewHandler(g Greeter) *Handler {
-	return &Handler{Greeter: g}
+func NewEvent(g Greeter) Event {
+	return Event{Greeter: g}
 }
 
-func (h *Handler) SayHello(name string) {
-	fmt.Println(h.Greeter.Greet(name))
+func (e Event) Start() {
+	msg := e.Greeter.Greet()
+	fmt.Println(msg)
 }
 
 func main() {
-	greeter := NewGreeter("Hello")
-	handler := NewHandler(greeter)
+	message := NewMessage()
+	greeter := NewGreeter(message)
+	event := NewEvent(greeter)
 
-	handler.SayHello("World")
+	event.Start()
 }
