@@ -27,7 +27,7 @@ func TestPersonService_Register(t *testing.T) {
 	}
 
 	if len(mockStore.CreateCalls()) != 1 {
-		t.Error("expected Create to be called")
+		t.Error("expected Create to be called once")
 	}
 	if gotPerson != p {
 		t.Errorf("expected %v, got %v", p, gotPerson)
@@ -58,6 +58,9 @@ func TestPersonService_GetName(t *testing.T) {
 		t.Fatalf("GetName failed: %v", err)
 	}
 
+	if len(mockStore.GetCalls()) != 1 {
+		t.Error("expected GetName to be called once")
+	}
 	if name != expected.Name {
 		t.Errorf("expected %q, got %q", expected.Name, name)
 	}
