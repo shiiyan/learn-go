@@ -38,9 +38,11 @@ type Greeter struct {
 	Grumpy  bool
 }
 
+var now = time.Now
+
 func NewGreeter(m Message) Greeter {
 	var grumpy bool
-	if time.Now().Unix()%2 == 0 {
+	if now().Unix()%2 == 0 {
 		grumpy = true
 	}
 
