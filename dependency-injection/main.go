@@ -14,8 +14,8 @@ import (
 
 type Message string
 
-func NewMessage() Message {
-	return Message("Hi there!")
+func NewMessage(phrase string) Message {
+	return Message(phrase)
 }
 
 type Greeter struct {
@@ -59,13 +59,13 @@ func (e Event) Start() {
 	fmt.Println(msg)
 }
 
-func InitializeEvent() (Event, error) {
+func InitializeEvent(phrase string) (Event, error) {
 	wire.Build(NewEvent, NewGreeter, NewMessage)
 	return Event{}, nil
 }
 
 func main() {
-	e, err := InitializeEvent()
+	e, err := InitializeEvent("Hi there")
 	if err != nil {
 		fmt.Printf("failed to create event: %s\n", err)
 		os.Exit(2)
