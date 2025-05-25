@@ -36,3 +36,29 @@ func TestPersonService_Register(t *testing.T) {
 		t.Error("expected true, got false")
 	}
 }
+
+func TestPersonService_GetName(t *testing.T) {
+	expected := &Person{ID: "101", Name: "Bob"}
+
+	mockStore := &PersonStoreMock{
+		GetFunc: func(ctx context.Context, id string) (*Person, error) {
+			if id != expected.ID {
+				t.Errorf("expected id=%q, got %q", expected.ID, id)
+			}
+
+			return expected, nil
+		},
+	}
+
+	s := NewPersonService(mockStore)
+	ctx := context.Background()
+
+	name, err := s.GetName(ctx, "101")
+	if err != nil {
+		t.Fatalf("GetName failed: %v", err)
+	}
+
+	if name != expected.Name {
+		t.Errorf("expected %q, got %q", expected.Name, name)
+	}
+}
