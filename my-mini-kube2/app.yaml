@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-go-app
+data:
+  go.mod: |
+    module app
+    go 1.20
+
+    require github.com/lib/pq v1.10.4
+
+  main.go: |
+    package main
+
+    import (
+      "database/sql"
+      "fmt"
+      "log"
+      "os"
+
+      _ "github.com/lib/pq"
+    )
+
+    func main() {
+      host     := os.Getenv("DB_HOST")
+      port     := os.Getenv("DB_PORT")
+      user     := os.Getenv("DB_USER")
+      password := os.Getenv("DB_PASSWORD")
+      dbname   := os.Getenv("DB_NAME")
+
+      connStr := fmt.Sprintf(
+        "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+        host, port, user, password, dbname,
+      )
+
+      db, err := sql.Open("postgres", connStr)
+      if err != nil {
+        log.Fatalf("failed to open DB: %v", err)
+      }
+      defer db.Close()
+
+      var version string
+      if err := db.QueryRow("SELECT version()").Scan(&version); err != nil {
+        log.Fatalf("query error: %v", err)
+      }
+      fmt.Printf("Postgres version: %s\n", version)
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      initContainers:
+      - name: init-app
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          cp -r /app-code/. /app
+        volumeMounts:
+        - name: app-code
+          mountPath: /app-code
+        - name: app-copy
+          mountPath: /app
+      containers:
+      - name: myapp
+        image: golang:1.20
+        workingDir: /app
+        command:
+          - sh
+          - -c
+          - |
+            go mod tidy
+            go run main.go
+        env:
+        - name: DB_HOST
+          value: postgres
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: myuser
+        - name: DB_PASSWORD
+          value: mypass
+        - name: DB_NAME
+          value: mydb
+        volumeMounts:
+        - name: app-copy
+          mountPath: /app
+      volumes:
+      - name: app-code
+        configMap:
+          name: my-go-app
+      - name: app-copy
+        emptyDir: {}
