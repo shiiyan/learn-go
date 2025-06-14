@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,6 +16,12 @@ import (
 )
 
 func main() {
+	var (
+		listen = flag.String("listen", ":8080", "HTTP listen address")
+		proxy  = flag.String("proxy", "", "Optional comma-separated list of URLs to proxy uppercase requests")
+	)
+	flag.Parse()
+
 	logger := log.NewLogfmtLogger(os.Stderr)
 
 	fieldKeys := []string{"method", "error"}
@@ -38,6 +46,7 @@ func main() {
 
 	var svc StringService
 	svc = stringService{}
+	svc = proxyingMiddleware(context.Background(), *proxy)(svc)
 	svc = loggingMiddleware{logger, svc}
 	svc = instrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 
@@ -56,6 +65,6 @@ func main() {
 	http.Handle("/count", countHandler)
 	http.Handle("/metrics", promhttp.Handler())
 
-	fmt.Println("Server starting on http://localhost:8080")
-	logger.Log(http.ListenAndServe(":8080", nil))
+	fmt.Println("Server starting on", *listen)
+	logger.Log(http.ListenAndServe(*listen, nil))
 }

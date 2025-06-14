@@ -3,8 +3,11 @@ package main
 import (
 	"context"
 	"errors"
+	"net/url"
+	"strings"
 
 	"github.com/go-kit/kit/endpoint"
+	httptransport "github.com/go-kit/kit/transport/http"
 )
 
 type proxymw struct {
@@ -29,4 +32,38 @@ func (mw proxymw) Uppercase(s string) (string, error) {
 
 func (mw proxymw) Count(s string) int {
 	return mw.next.Count(s)
+}
+
+func proxyingMiddleware(ctx context.Context, proxyUrl string) ServiceMiddleware {
+	if proxyUrl == "" {
+		return func(next StringService) StringService {
+			return next
+		}
+	}
+
+	return func(next StringService) StringService {
+		return proxymw{ctx, next, makeUppercaseProxy(proxyUrl)}
+	}
+}
+
+func makeUppercaseProxy(proxyURL string) endpoint.Endpoint {
+	if !strings.HasPrefix(proxyURL, "http") {
+		proxyURL = "http://" + proxyURL
+	}
+
+	u, err := url.Parse(proxyURL)
+	if err != nil {
+		panic(err)
+	}
+
+	if u.Path == "" {
+		u.Path = "/uppercase"
+	}
+
+	return httptransport.NewClient(
+		"GET",
+		u,
+		encodeRequest,
+		decodeUppercaseResponse,
+	).Endpoint()
 }
