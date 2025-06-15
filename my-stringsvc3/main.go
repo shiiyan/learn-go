@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"net/http"
 	"os"
 
@@ -22,7 +21,9 @@ func main() {
 	)
 	flag.Parse()
 
-	logger := log.NewLogfmtLogger(os.Stderr)
+	var logger log.Logger
+	logger = log.NewLogfmtLogger(os.Stderr)
+	logger = log.With(logger, "listen", *listen, "caller", log.DefaultCaller)
 
 	fieldKeys := []string{"method", "error"}
 	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
@@ -46,7 +47,7 @@ func main() {
 
 	var svc StringService
 	svc = stringService{}
-	svc = proxyingMiddleware(context.Background(), *proxy)(svc)
+	svc = proxyingMiddleware(context.Background(), *proxy, logger)(svc)
 	svc = loggingMiddleware{logger, svc}
 	svc = instrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 
@@ -65,6 +66,6 @@ func main() {
 	http.Handle("/count", countHandler)
 	http.Handle("/metrics", promhttp.Handler())
 
-	fmt.Println("Server starting on", *listen)
+	logger.Log("listen_on", *listen)
 	logger.Log(http.ListenAndServe(*listen, nil))
 }
