@@ -6,8 +6,10 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/go-kit/kit/circuitbreaker"
 	"github.com/go-kit/kit/endpoint"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/sony/gobreaker"
 )
 
 type proxymw struct {
@@ -41,8 +43,12 @@ func proxyingMiddleware(ctx context.Context, proxyUrl string) ServiceMiddleware 
 		}
 	}
 
+	e := makeUppercaseProxy(proxyUrl)
+	e = circuitbreaker.Gobreaker(gobreaker.NewCircuitBreaker(gobreaker.Settings{}))(e)
+
+
 	return func(next StringService) StringService {
-		return proxymw{ctx, next, makeUppercaseProxy(proxyUrl)}
+		return proxymw{ctx, next, e}
 	}
 }
 
