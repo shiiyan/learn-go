@@ -5,11 +5,14 @@ import (
 	"errors"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/go-kit/kit/circuitbreaker"
 	"github.com/go-kit/kit/endpoint"
+	"github.com/go-kit/kit/ratelimit"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/sony/gobreaker"
+	"golang.org/x/time/rate"
 )
 
 type proxymw struct {
@@ -43,9 +46,13 @@ func proxyingMiddleware(ctx context.Context, proxyUrl string) ServiceMiddleware 
 		}
 	}
 
+	var (
+		qps = 10
+	)
+
 	e := makeUppercaseProxy(proxyUrl)
 	e = circuitbreaker.Gobreaker(gobreaker.NewCircuitBreaker(gobreaker.Settings{}))(e)
-
+	e = ratelimit.NewErroringLimiter(rate.NewLimiter(rate.Every(time.Second), qps))(e)
 
 	return func(next StringService) StringService {
 		return proxymw{ctx, next, e}
