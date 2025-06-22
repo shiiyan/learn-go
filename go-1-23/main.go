@@ -52,9 +52,20 @@ func PrintAll[V any](s iter.Seq[V]) {
 func main() {
 	// rangeIteration()
 
-	i := []int{1, 2, 3, 4, 5}
-	PrintAll(Reversed(i))
+	// i := []int{1, 2, 3, 4, 5}
+	// PrintAll(Reversed(i))
+	// s := []string{"a", "b", "c"}
+	// PrintAll(Reversed(s))
 
 	s := []string{"a", "b", "c"}
-	PrintAll(Reversed(s))
+	next, stop := iter.Pull(Reversed(s))
+	defer stop()
+
+	for {
+		v, ok := next()
+		if !ok {
+			break
+		}
+		fmt.Print(v, " ")
+	}
 }
