@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"iter"
+	"slices"
 	"sync"
 )
 
@@ -49,6 +50,14 @@ func PrintAll[V any](s iter.Seq[V]) {
 	fmt.Println()
 }
 
+func Chunk() {
+	s := []int{1, 2, 3, 4, 5}
+	chunked := slices.Chunk(s, 2)
+	for v := range chunked {
+		fmt.Printf("%v ", v)
+	}
+}
+
 func main() {
 	// rangeIteration()
 
@@ -57,15 +66,17 @@ func main() {
 	// s := []string{"a", "b", "c"}
 	// PrintAll(Reversed(s))
 
-	s := []string{"a", "b", "c"}
-	next, stop := iter.Pull(Reversed(s))
-	defer stop()
+	// s := []string{"a", "b", "c"}
+	// next, stop := iter.Pull(Reversed(s))
+	// defer stop()
 
-	for {
-		v, ok := next()
-		if !ok {
-			break
-		}
-		fmt.Print(v, " ")
-	}
+	// for {
+	// 	v, ok := next()
+	// 	if !ok {
+	// 		break
+	// 	}
+	// 	fmt.Print(v, " ")
+	// }
+
+	Chunk()
 }
