@@ -38,3 +38,40 @@ func testParseDate(t *rapid.T) {
 func TestParseDate(t *testing.T) {
 	rapid.Check(t, testParseDate)
 }
+
+func testQueue(t *rapid.T) {
+	n := rapid.IntRange(1, 1000).Draw(t, "n")
+	q := NewQueue(n)
+	var state []int
+
+	t.Repeat(map[string]func(*rapid.T){
+		"get": func(t *rapid.T) {
+			if q.Size() == 0 {
+				t.Skip("queue is empty, cannot get")
+			}
+
+			i, _ := q.Get()
+			if i != state[0] {
+				t.Fatalf("expected Get() to return %d, got %d", state[0], i)
+			}
+
+			state = state[1:]
+		},
+		"put": func(t *rapid.T) {
+			i := rapid.Int().Draw(t, "i")
+			ok := q.Put(i)
+			if ok {
+				state = append(state, i)
+			}
+		},
+		"": func(t *rapid.T) {
+			if q.Size() != len(state) {
+				t.Fatalf("expected queue size %d, got %d", len(state), q.Size())
+			}
+		},
+	})
+}
+
+func TestQueue(t *testing.T) {
+	rapid.Check(t, testQueue)
+}

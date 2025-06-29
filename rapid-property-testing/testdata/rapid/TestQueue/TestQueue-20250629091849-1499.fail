@@ -1,0 +1,23 @@
+# 2025/06/29 09:18:49.303803 [TestQueue] [rapid] draw n: 1
+# 2025/06/29 09:18:49.303806 [TestQueue] [rapid] draw action: "put"
+# 2025/06/29 09:18:49.303808 [TestQueue] [rapid] draw i: 0
+# 2025/06/29 09:18:49.303808 [TestQueue] [rapid] draw action: "put"
+# 2025/06/29 09:18:49.303808 [TestQueue] [rapid] draw i: 0
+# 2025/06/29 09:18:49.303809 [TestQueue] expected queue size 2, got 0
+# 
+v0.4.8#9143531871433900
+0x0
+0x0
+0x0
+0x1084210842108
+0x0
+0x1
+0x0
+0x0
+0x0
+0x1084210842108
+0x0
+0x1
+0x0
+0x0
+0x0
