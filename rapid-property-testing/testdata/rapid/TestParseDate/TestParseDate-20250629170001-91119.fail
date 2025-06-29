@@ -1,0 +1,15 @@
+# 2025/06/29 17:00:01.972243 [TestParseDate] [rapid] draw y: 0
+# 2025/06/29 17:00:01.972244 [TestParseDate] [rapid] draw m: 10
+# 2025/06/29 17:00:01.972245 [TestParseDate] [rapid] draw d: 1
+# 2025/06/29 17:00:01.972245 [TestParseDate] expected 0000-10-01, got 0000-00-01
+# 
+v0.4.8#2801308293388062801
+0x0
+0x0
+0x0
+0x0
+0x9867f1f40f739
+0x9
+0x0
+0x0
+0x0

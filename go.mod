@@ -24,4 +24,5 @@ require (
 	github.com/streadway/handy v0.0.0-20200128134331-0f66f006fb2e // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
+	pgregory.net/rapid v1.2.0 // indirect
 )
