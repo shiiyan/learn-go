@@ -32,7 +32,7 @@ type Money struct {
 
 type CancellationPolicy interface {
 	CanCancel(reservation *Reservation, canceller Canceller) error
-	ShouldRefund() bool
+	CancelWithoutRefund() bool
 }
 
 type EndUserCancellationPolicy struct{}
@@ -42,24 +42,25 @@ func (p EndUserCancellationPolicy) CanCancel(reservation *Reservation, canceller
 	if reservation.UserID != canceller.GetID() {
 		return errors.New("canceller is not the owner of the reservation")
 	}
+
 	return nil
 }
 
-func (p EndUserCancellationPolicy) ShouldRefund() bool {
-	// end user always gets refund
-	return true
+func (p EndUserCancellationPolicy) CancelWithoutRefund() bool {
+	// end user cannot cancel without refund
+	return false
 }
 
-type AdminCancellationPolicy struct{}
+type AdminCancellationWithoutRefundPolicy struct{}
 
-func (p AdminCancellationPolicy) CanCancel(reservation *Reservation, canceller Canceller) error {
+func (p AdminCancellationWithoutRefundPolicy) CanCancel(reservation *Reservation, canceller Canceller) error {
 	// admin can cancel any reservation
 	return nil
 }
 
-func (p AdminCancellationPolicy) ShouldRefund() bool {
+func (p AdminCancellationWithoutRefundPolicy) CancelWithoutRefund() bool {
 	// admin can cancel without refund
-	return false
+	return true
 }
 
 type AdminCancellationWithRefundPolicy struct{}
@@ -69,9 +70,9 @@ func (p AdminCancellationWithRefundPolicy) CanCancel(reservation *Reservation, c
 	return nil
 }
 
-func (p AdminCancellationWithRefundPolicy) ShouldRefund() bool {
-	// admin can cancel with refund
-	return true
+func (p AdminCancellationWithRefundPolicy) CancelWithoutRefund() bool {
+	// admin cancels with refund (not without)
+	return false
 }
 
 func NewCancellationPolicy(userRole Role, shouldRefund bool) CancellationPolicy {
@@ -80,7 +81,7 @@ func NewCancellationPolicy(userRole Role, shouldRefund bool) CancellationPolicy 
 		if shouldRefund {
 			return AdminCancellationWithRefundPolicy{}
 		}
-		return AdminCancellationPolicy{}
+		return AdminCancellationWithoutRefundPolicy{}
 	case RoleEndUser:
 		return EndUserCancellationPolicy{}
 	}
@@ -131,6 +132,10 @@ func (r *Reservation) Cancel(canceller Canceller, policy CancellationPolicy, clo
 		return nil, errors.Wrap(err, "cannot cancel reservation")
 	}
 
+	if policy.CancelWithoutRefund() && !canceller.CanCancelWithoutRefund() {
+		return nil, errors.New("canceller cannot cancel without refund")
+	}
+
 	money := r.calculateRefund(policy)
 
 	r.status = StatusCancelled
@@ -154,7 +159,7 @@ type CancellationResult struct {
 }
 
 func (r *Reservation) calculateRefund(policy CancellationPolicy) Money {
-	if !policy.ShouldRefund() {
+	if policy.CancelWithoutRefund() {
 		return Money{Amount: 0, Currency: ""}
 	}
 
