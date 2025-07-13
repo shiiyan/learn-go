@@ -23,7 +23,8 @@ require (
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/smartystreets/goconvey v1.8.1 // indirect
 	github.com/streadway/handy v0.0.0-20200128134331-0f66f006fb2e // indirect
-	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/sys v0.34.0 // indirect
+	golang.org/x/tools v0.35.0
 	google.golang.org/protobuf v1.36.5 // indirect
 	pgregory.net/rapid v1.2.0
 )

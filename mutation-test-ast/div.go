@@ -11,5 +11,5 @@ func divide(divident, divisor int) (int, error) {
 	}
 
 	// mutant 2: change the operator
-	return divident * divisor, nil
+	return divident / divisor, nil
 }
