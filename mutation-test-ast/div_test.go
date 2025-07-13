@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+// go test -v --overlay overlay.json
+
 func TestDivide(t *testing.T) {
 	expected := 1
 	res, err := divide(1, 1)
