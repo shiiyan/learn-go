@@ -9,7 +9,7 @@ func divide(divident, divisor int) (int, error) {
 	if divisor == 0 {
 		return 0, ErrDivideByZero
 	}
-	
+
 	// mutant 2: change the operator
 	return divident * divisor, nil
 }
