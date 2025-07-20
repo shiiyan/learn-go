@@ -58,6 +58,20 @@ func Chunk() {
 	}
 }
 
+func countdown(n int) iter.Seq[int] {
+	return func(yield func(int) bool) {
+		for i := n; i >= 0; i-- {
+			if !yield(i) {
+				return
+			}
+		}
+	}
+}
+
+func callYield(yield func(int) bool) {
+	yield(5)
+}
+
 func main() {
 	// rangeIteration()
 
@@ -78,5 +92,26 @@ func main() {
 	// 	fmt.Print(v, " ")
 	// }
 
-	Chunk()
+	// Chunk()
+
+	for num := range countdown(5) {
+		if num == 2 {
+			break
+		}
+		fmt.Println(num)
+	}
+	fmt.Println()
+	countdown(5)(func(num int) bool {
+		if num == 2 {
+			return false
+		}
+
+		fmt.Println(num)
+		return true
+	})
+	fmt.Println()
+	callYield(func(num int) bool {
+		fmt.Println(num)
+		return true
+	})
 }

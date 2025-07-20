@@ -3,6 +3,7 @@ package main
 import (
 	"cmp"
 	"fmt"
+	"iter"
 )
 
 func Min[T cmp.Ordered](x, y T) T {
@@ -26,6 +27,14 @@ func Unique[T comparable](slice []T) []T {
 
 	return result
 }
+
+type Set[E any] interface {
+	Insert(E)
+	Delete(E)
+	Has(E) bool
+	All() iter.Seq[E]
+}
+
 
 func main() {
 	fmt.Println("Min of 3 and 5:", Min(3, 5))
