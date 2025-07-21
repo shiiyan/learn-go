@@ -24,9 +24,9 @@ func main() {
 	var addOneFn MyIntFunc = addOne
 	fmt.Println(addOneFn.Double(2))
 
-	var squareFn MyIntFunc = square
+	squareFn := MyIntFunc(square)
 	fmt.Println(squareFn.Double(2))
 
-	var negateFn MyIntFunc = negate
+	negateFn := MyIntFunc(negate)
 	fmt.Println(negateFn.Double(2))
 }
