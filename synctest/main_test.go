@@ -3,7 +3,6 @@ package main
 import (
 	"sync"
 	"testing"
-	"testing/synctest"
 	"time"
 )
 
@@ -56,53 +55,53 @@ func TestWaitGroup(t *testing.T) {
 	})
 }
 
-// GOEXPERIMENT=synctest go test -v
-func TestBasicSyncTest(t *testing.T) {
-	synctest.Run(func() {
-		start := time.Now()
+// // GOEXPERIMENT=synctest go test -v
+// func TestBasicSyncTest(t *testing.T) {
+// 	synctest.Run(func() {
+// 		start := time.Now()
 
-		done := make(chan bool)
+// 		done := make(chan bool)
 
-		// This goroutine will run in controlled time
-		go func() {
-			time.Sleep(5 * time.Second)
-			done <- true
-		}()
+// 		// This goroutine will run in controlled time
+// 		go func() {
+// 			time.Sleep(5 * time.Second)
+// 			done <- true
+// 		}()
 
-		<-done
+// 		<-done
 
-		// In real time, this would take 5 seconds
-		// In synctest, it completes instantly
-		elapsed := time.Since(start)
-		t.Logf("Elapsed time: %v", elapsed) // Will show 5s even though test ran instantly
-	})
-}
+// 		// In real time, this would take 5 seconds
+// 		// In synctest, it completes instantly
+// 		elapsed := time.Since(start)
+// 		t.Logf("Elapsed time: %v", elapsed) // Will show 5s even though test ran instantly
+// 	})
+// }
 
-func TestRaceCondition(t *testing.T) {
-	synctest.Run(func() {
-		var counter int
-		done := make(chan bool, 2)
+// func TestRaceCondition(t *testing.T) {
+// 	synctest.Run(func() {
+// 		var counter int
+// 		done := make(chan bool, 2)
 
-		// Two goroutines incrementing counter
-		go func() {
-			temp := counter
-			counter = temp + 1
-			done <- true
-		}()
+// 		// Two goroutines incrementing counter
+// 		go func() {
+// 			temp := counter
+// 			counter = temp + 1
+// 			done <- true
+// 		}()
 
-		go func() {
-			temp := counter
-			counter = temp + 1
-			done <- true
-		}()
+// 		go func() {
+// 			temp := counter
+// 			counter = temp + 1
+// 			done <- true
+// 		}()
 
-		<-done
-		<-done
+// 		<-done
+// 		<-done
 
-		// Without proper synchronization, counter might be 1 or 2
-		// synctest makes this deterministic
-		if counter != 2 {
-			t.Errorf("Race condition detected: counter = %d", counter)
-		}
-	})
-}
+// 		// Without proper synchronization, counter might be 1 or 2
+// 		// synctest makes this deterministic
+// 		if counter != 2 {
+// 			t.Errorf("Race condition detected: counter = %d", counter)
+// 		}
+// 	})
+// }

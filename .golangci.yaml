@@ -1,0 +1,27 @@
+version: "2"
+
+run:
+  timeout: 3m
+
+linters:
+  enable:
+    - revive
+    - staticcheck
+    - govet
+    - gocognit
+    - nestif
+    - dupl
+  settings:
+    revive:
+      enable-all-rules: true
+    staticcheck:
+      checks:
+        - all
+    govet:
+      enable-all: true
+    gocognit:
+      min-complexity: 5
+    nestif:
+      min-complexity: 5
+    dupl:
+      threshold: 20
